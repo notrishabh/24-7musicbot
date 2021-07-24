@@ -31,8 +31,9 @@ client.on('message', async message => {
 		} else if (message.content.startsWith(`${prefix}stop`)) {
 		    stop(message, serverQueue);
 		    return;
-		} else {
-		    message.channel.send("You need to enter a valid command!");
+		} else if(message.content.startsWith(`${prefix}radio`)){
+		    execute(message, serverQueue);
+		    return;
 		}
 
 	}else{
@@ -53,6 +54,9 @@ async function execute(message, serverQueue){
 	const perms = voiceChannel.permissionsFor(message.client.user);
 	if(!perms.has("CONNECT") || !perms.has("SPEAK")){
 		return message.channel.send("No perms to speak");
+	}
+	if(args[0] === `${prefix}radio`){
+		str += "stream";
 	}
 	const songInfo = await getInfo(str);
 	const bong = await ytdl.getInfo(songInfo.items[0].id);
@@ -117,6 +121,8 @@ function stop(message, serverQueue) {
   serverQueue.songs = [];
   serverQueue.connection.dispatcher.end();
 }
+
+
 function play(guild, song) {
   const serverQueue = queue.get(guild.id);
   if (!song) {
